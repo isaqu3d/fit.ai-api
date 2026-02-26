@@ -2,7 +2,7 @@
   "name": "fit.ai-api",
   "version": "1.0.0",
   "description": "",
-  "types": "module",
+  "type": "module",
   "scripts": {
     "dev": "tsx --watch src/index.tsx"
   },
