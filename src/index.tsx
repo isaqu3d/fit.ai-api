@@ -12,6 +12,7 @@ import {
 } from "fastify-type-provider-zod";
 import z from "zod";
 
+import { WeekDay } from "./generated/prisma/enums.js";
 import { auth } from "./lib/auth.js";
 
 const app = Fastify({
@@ -70,6 +71,52 @@ app.withTypeProvider<ZodTypeProvider>().route({
   handler: async () => {
     return app.swagger();
   },
+});
+
+app.withTypeProvider<ZodTypeProvider>().route({
+  method: "POST",
+  url: "/workout-plans",
+  schema: {
+    body: z.object({
+      name: z.string().trim().min(1),
+      weekDay: z.enum(WeekDay),
+      isRest: z.boolean().default(false),
+      estimatedDurationInSeconds: z.number().min(1),
+      exercises: z.array(
+        z.object({
+          order: z.number().min(0),
+          name: z.string().trim().min(1),
+          sets: z.number().min(1),
+          reps: z.number().min(1),
+          restTimeInSeconds: z.number().min(1),
+        }),
+      ),
+    }),
+
+    response: {
+      201: z.object({
+        id: z.string(),
+        name: z.string(),
+        weekDay: z.enum(WeekDay),
+        isRest: z.boolean(),
+        estimatedDurationInSeconds: z.number(),
+        exercises: z.array(
+          z.object({
+            order: z.number(),
+            name: z.string(),
+            sets: z.number(),
+            reps: z.number(),
+            restTimeInSeconds: z.number(),
+          }),
+        ),
+      }),
+      400: z.object({
+        error: z.string(),
+        code: z.string(),
+      }),
+    },
+  },
+  handler: async (request, reply) => {},
 });
 
 app.withTypeProvider<ZodTypeProvider>().route({
