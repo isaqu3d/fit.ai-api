@@ -1,7 +1,7 @@
 import { WeekDay } from "../generated/prisma/enums.js";
 import { prisma } from "../lib/db.js";
 
-interface CreateWorkoutPlanDto {
+interface InputDto {
   userId: string;
   name: string;
   workoutDays: Array<{
@@ -19,8 +19,12 @@ interface CreateWorkoutPlanDto {
   }>;
 }
 
+interface OutputDto {
+  id: string;
+}
+
 export class CreateWorkoutPlan {
-  async execute(dto: CreateWorkoutPlanDto) {
+  async execute(dto: InputDto): Promise<OutputDto> {
     const existingWorkoutPlan = await prisma.workoutPlan.findFirst({
       where: {
         isActive: true,
