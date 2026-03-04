@@ -12,6 +12,8 @@ export const workoutPlanRoutes = async (app: FastifyInstance) => {
     method: "POST",
     url: "/",
     schema: {
+      tags: ["Workout Plan"],
+      summary: "Create a workout plan",
       body: WorkoutPlanSchema.omit({ id: true }),
 
       response: {
@@ -50,14 +52,14 @@ export const workoutPlanRoutes = async (app: FastifyInstance) => {
         if (error instanceof NotFoundError) {
           return reply.status(404).send({
             error: error.message,
-            code: "NOT_FOUND",
+            code: "NOT_FOUND_ERROR",
           });
         }
       }
 
       return reply.status(500).send({
         error: "Internal server error",
-        code: "INTERNAL_ERROR",
+        code: "INTERNAL_SERVER_ERROR",
       });
     },
   });
