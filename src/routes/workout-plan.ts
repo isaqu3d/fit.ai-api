@@ -14,7 +14,7 @@ export const workoutPlanRoutes = async (app: FastifyInstance) => {
     schema: {
       tags: ["Workout Plan"],
       summary: "Create a workout plan",
-      body: WorkoutPlanSchema.omit({ id: true }),
+      body: WorkoutPlanSchema.omit({ id: true, createdAt: true, updatedAt: true }),
 
       response: {
         201: WorkoutPlanSchema,
