@@ -1,3 +1,4 @@
+import { NotFoundError } from "../errors/index.js";
 import { WeekDay } from "../generated/prisma/enums.js";
 import { prisma } from "../lib/db.js";
 
@@ -19,8 +20,28 @@ interface InputDto {
   }>;
 }
 
+interface OutputDto {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+  workoutDays: Array<{
+    name: string;
+    weekDay: WeekDay;
+    isRest: boolean;
+    estimatedDurationInSeconds: number;
+    exercises: Array<{
+      order: number;
+      name: string;
+      sets: number;
+      reps: number;
+      restTimeInSeconds: number;
+    }>;
+  }>;
+}
+
 export class CreateWorkoutPlan {
-  async execute(dto: InputDto) {
+  async execute(dto: InputDto): Promise<OutputDto> {
     const existingWorkoutPlan = await prisma.workoutPlan.findFirst({
       where: {
         isActive: true,
@@ -76,9 +97,28 @@ export class CreateWorkoutPlan {
       });
 
       if (!result) {
-        throw new Error("Workout plan not found after creation");
+        throw new NotFoundError("Workout plan not found after creation");
       }
-      return result;
+
+      return {
+        id: result.id,
+        name: result.name,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
+        workoutDays: result.workoutDays.map((day) => ({
+          name: day.name,
+          weekDay: day.weekDay,
+          isRest: day.isRest,
+          estimatedDurationInSeconds: day.estimatedDurationInSeconds,
+          exercises: day.exercises.map((exercise) => ({
+            order: exercise.order,
+            name: exercise.name,
+            sets: exercise.sets,
+            reps: exercise.reps,
+            restTimeInSeconds: exercise.restTimeInSeconds,
+          })),
+        })),
+      };
     });
   }
 }
