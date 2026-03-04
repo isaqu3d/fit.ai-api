@@ -19,12 +19,8 @@ interface InputDto {
   }>;
 }
 
-interface OutputDto {
-  id: string;
-}
-
 export class CreateWorkoutPlan {
-  async execute(dto: InputDto): Promise<OutputDto> {
+  async execute(dto: InputDto) {
     const existingWorkoutPlan = await prisma.workoutPlan.findFirst({
       where: {
         isActive: true,
@@ -41,7 +37,7 @@ export class CreateWorkoutPlan {
         });
       }
 
-      const result = await tx.workoutPlan.create({
+      const workoutPlan = await tx.workoutPlan.create({
         data: {
           name: dto.name,
           userId: dto.userId,
@@ -65,6 +61,23 @@ export class CreateWorkoutPlan {
           },
         },
       });
+
+      const result = await tx.workoutPlan.findUnique({
+        where: {
+          id: workoutPlan.id,
+        },
+        include: {
+          workoutDays: {
+            include: {
+              exercises: true,
+            },
+          },
+        },
+      });
+
+      if (!result) {
+        throw new Error("Workout plan not found after creation");
+      }
       return result;
     });
   }
