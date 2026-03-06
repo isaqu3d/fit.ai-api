@@ -169,7 +169,6 @@ export class GetHomeData {
       }
 
       if (restWeekDays.has(weekDay)) {
-        streak++;
         day = day.subtract(1, "day");
         continue;
       }
