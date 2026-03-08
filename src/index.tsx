@@ -44,7 +44,11 @@ await app.register(fastifySwagger, {
 });
 
 await app.register(fastifyCors, {
-  origin: ["http://localhost:8081", "http://127.0.1:8081", "localhost:3000"],
+  origin: [
+    "http://localhost:8081",
+    "http://127.0.0.1:8081",
+    "http://localhost:3000",
+  ],
   credentials: true,
 });
 
@@ -106,6 +110,9 @@ app.withTypeProvider<ZodTypeProvider>().route({
 app.route({
   method: ["GET", "POST"],
   url: "/api/auth/*",
+  schema: {
+    hide: true,
+  },
   async handler(request, reply) {
     try {
       // Construct request URL
