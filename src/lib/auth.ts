@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { openAPI } from "better-auth/plugins";
 
 import { prisma } from "./db.js";
+import { env } from "./env.js";
 
 export const auth = betterAuth({
   trustedOrigins: ["http://localhost:3000"],
@@ -20,6 +21,7 @@ export const auth = betterAuth({
   advanced: {
     crossSubDomainCookies: {
       enabled: true,
+      domain: env.NODE_ENV === "production" ? ".fit.ai" : "localhost",
     },
   },
 });
